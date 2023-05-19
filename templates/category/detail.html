@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+{{ category.title }}
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-md-center">
+        <div class="col"></div>
+        <div class="col-10 bg-light">
+            <div class="container">
+                <!-- 导航路径 -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'article:category_list' %}">Home</a></li>
+                        {% for father in fathers %}
+                            <li class="breadcrumb-item"><a href="{% url 'article:category_detail' father.id %}">{{ father.title }}</a></li>
+                        {% endfor %}
+                        <li class="breadcrumb-item active" aria-current="page">{{ category.title }}</li>
+                    </ol>
+                </nav>
+                <div class="accordion" id="myAccordion">
+                    <div class="card">
+                        <div class="card-header" id="headingOne">
+                            <h1 class="mb-0">
+                                <button type="button" class="btn btn-dark" data-toggle="collapse"
+                                    data-target="#collapseOne">{{ category.title }}</button>
+                            </h1>
+                        </div>
+                        {% if category.description %}
+                        <div id="collapseOne" class="collapse" aria-labelledby="headingOne"
+                            data-parent="#myAccordion">
+                            <div class="card-body">
+                                <p>{{ category.description|safe }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <a href="#" onclick="confirm_safe_delete()">Delete</a>
+                <form
+                        style="display: none;"
+                        id="safe_delete"
+                        action="{% url 'article:delete_category' category.id %}"
+                        method="POST"
+                    >
+                    {% csrf_token %}
+                    <button type="submit">Send</button>
+                    </form>
+                <a href="{% url 'article:update_category' category.id %}">Update</a>
+            </div>
+            <hr>
+            <!-- 本层目录中所包含的子目录 -->
+            <div class="row mt-2">
+                {% for sub_category in categories %}
+                    {% if sub_category.father.id == category.id %}
+                        <div class="col mb-2">
+                            <a href="{% url 'article:category_detail' sub_category.id %}" data-toggle="tooltip"
+                                data-placement="bottom" title="{{ sub_category.description|slice:'50' }}...">
+                                {{ sub_category.title }}
+                            </a>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                <!-- 此处追加新子目录 -->
+                <div class="col mb-2">
+                    <a class="btn btn-primary" href="{% url 'article:new_category' category.id %}" data-toggle="tooltip"
+                        data-placement="right" title="Add More SubCategory!">
+                        +
+                    </a>
+                </div>
+                <script>
+                    $(function () {
+                        $('[data-toggle="tooltip"]').tooltip();
+                    });
+                </script>
+            </div>
+
+            <hr>
+
+            <!-- 本层目录中所包含的文章 -->
+            <div class="row mt-2">
+                {% for article in articles %}
+                <div class="col mb-2">
+                    <a href="{% url 'article:article_detail' article.id %}" data-toggle="tooltip"
+                        data-placement="bottom" title="{{ article.body|slice:'50' }}...">
+                        {{ article.title }}
+                    </a>
+                </div>
+                {% endfor %}
+                <!-- 此处追加新文章 -->
+                <div class="col mb-2">
+                    <a class="btn btn-primary" href="{% url 'article:new_article' category.id %}" data-toggle="tooltip"
+                        data-placement="right" title="Add More Article!">
+                        +
+                    </a>
+                </div>
+                <script>
+                    $(function () {
+                        $('[data-toggle="tooltip"]').tooltip();
+                    });
+                </script>
+            </div>
+        </div>
+        <div class="col"></div>
+    </div>
+</div>
+
+<script>
+    function confirm_safe_delete() {
+        layer.open({
+            title: "Ensure Delete",
+            content: "Are you sure to delete this category?",
+            yes: function(index, layero) {
+                $('form#safe_delete button').click();
+                layer.close(index);
+            }
+        })
+    }
+</script>
+{% endblock content %}

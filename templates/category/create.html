@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+    NewCategory
+{% endblock title %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <br>
+            <form method="post" action=".">
+                {% csrf_token %}
+                <div class="form-group">
+                    {% if categories %}
+                        <label for="father">FatherCategory</label>
+                        <select class="form-control" id="father" name="father">
+                            <option value="">(root)</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}" {% if category.id == father %} selected {% endif %}>{{ category }}</option>
+                            {% endfor %}
+                        </select>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" class="form-control" id="title" name="title">
+                </div>
+                <div class="form-group">
+                    <label for="body">Description</label>
+                    <textarea type="text" class="form-control" id="description" name="description" rows="14"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Finished</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    All Categories
+{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div class="col-2">
+                <!-- 搜索框 -->
+                <div class="col-auto mr-auto">
+                    <form class="form-inline">
+                        <label class="sr-only">content</label>
+                        <input type="text"
+                            class="form-control mb-2 mr-sm-2"
+                            name="search"
+                            placeholder="Search..."
+                            required
+                        >
+                    </form>
+                </div>
+            </div>
+            <div class="col-10 bg-light">
+                <!-- 用于搜索框结果呈现 -->
+                {% if search != '' %}
+                    {% if categories %}
+                        <h5><span style="color:red">{{ search }}</span></h5>
+                        <hr>
+                    {% else %}
+                        <h5>No <span style="color:red">{{ search }}</span> related Categories...</h5>
+                    {% endif %}
+                {% endif %}
+
+                <div class="row mt-2">
+                    {% for category in categories %}
+                        {% if category.father == father %}
+                            <div class="col mb-2">
+                                <a href="{% url 'article:category_detail' category.id %}" data-toggle="tooltip" data-placement="right" title="{{ category.description|slice:'50'|safe }}...">
+                                    {{ category.title }}
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="col mb-2">
+                        <a class="btn btn-primary" href="{% url 'article:new_category' %}" data-toggle="tooltip" data-placement="right"
+                            title="Add More Category!">
+                            +
+                        </a>
+                    </div>
+                    <script>
+                        $(function () {
+                            $('[data-toggle="tooltip"]').tooltip();
+                        });
+                    </script>
+                </div>
+            </div>
+            <div class="col"></div>
+        </div>
+    </div>
+{% endblock content %}

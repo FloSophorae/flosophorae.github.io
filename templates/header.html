@@ -1,0 +1,18 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+      <!-- 导航栏商标 -->
+      <a class="navbar-brand" href="{% url 'article:category_list' %}">😀Wiki</a>
+      <!-- 导航入口 -->
+      <div>
+        <ul class="navbar-nav">
+          <!-- 条目 -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'article:new_category' %}">💡NewCategory</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'article:new_article' %}">💡NewArticle</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>

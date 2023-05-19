@@ -1,0 +1,147 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 网页标题：文章标题 -->
+    <title>{{ article.title|slice:'15' }}</title>
+</head>
+<body>
+    <!-- 引入：bootstrap5 -->
+    <!-- Bootstrap5 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css">
+    <!--  popper.min.js 用于弹窗、提示、下拉菜单 -->
+    <script src="https://cdn.staticfile.org/popper.js/2.9.3/umd/popper.min.js"></script>
+    <!-- 最新的 Bootstrap5 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/js/bootstrap.min.js"></script>
+
+    <!-- 引入：jQurey，popper，bootstrap，layui -->
+    <script src="{% static 'jquery/jquery-3.6.4.js' %}"></script>
+    <script src="{% static 'layer/layui.js' %}"></script>
+
+    <!-- Github标准的Markdown风格 -->
+    <link rel="stylesheet" href="{% static 'article/create/github-markdown-light.css' %}">
+    <!-- Highlight.js代码高亮: monokai风格 -->
+    <link rel="stylesheet" href="{% static 'article/highlight-monokai.css' %}">
+
+    <link rel="stylesheet" href="{% static 'article/detail/style.css' %}">
+
+    <!-- 顶部导航栏 -->
+    <nav id="top-nav" class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <!-- 导航栏商标 -->
+            <a class="navbar-brand" href="{% url 'article:category_list' %}">😀Wiki</a>
+            <!-- 文章标题 -->
+            <div id="article-title">{{ article.title }}</div>
+            <!-- 面包屑导航 -->
+            <nav id="nav-bar" aria-label="breadcrumb">
+                <ol id="nav-list" class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'article:category_list' %}">Home</a></li>
+                    {% for father in fathers %}
+                    <li class="breadcrumb-item"><a href="{% url 'article:category_detail' father.id %}">{{ father.title }}</a></li>
+                    {% endfor %}
+                    <li class="breadcrumb-item active" aria-current="page">{{ article.title }}</li>
+                </ol>
+            </nav>
+            <!-- 导航入口 -->
+            <div>
+                <ul class="navbar-nav">
+                    <!-- 条目 -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'article:new_category' %}">💡NewCategory</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'article:new_article' %}">💡NewArticle</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="page-container">
+        <!-- 左侧栏 -->
+        <div id="left-bar">
+            <!-- 文章创建时间、修改时间 -->
+            <div id="times">
+                <div class="time">
+                    <label>🕐︎CreatedTime</label>
+                    <span>{{ article.created }}</span>
+                </div>
+                <div class="time">
+                    <label>🕐︎UpdatedTime</label>
+                    <span>{{ article.updated }}</span>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- 文章Tags -->
+            <div id="tags-container">
+                <div id="tags-title">🏷︎Tags</div>
+                <div id="tags">
+                    {% for tag in article.tags.all %}
+                        <span class="tag">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- 文章相关操作 -->
+            <div id="operations">
+                <!-- 编辑 -->
+                <a id="edit-btn" href="{% url 'article:update_article' article.id %}">
+                    <span>⌨️</span>
+                    <span>Edit</span>
+                </a>
+                <!-- 删除 -->
+                <a id="delete-btn" href="#" onclick="confirm_safe_delete()">
+                    <span>🗑</span>
+                    <span>Delete</span>
+                </a>
+                <form style="display: none;" id="safe_delete" action="{% url 'article:delete_article' article.id %}"
+                    method="POST">
+                    {% csrf_token %}
+                    <button type="submit">Send</button>
+                </form>
+                <!-- 返回 -->
+                <a id="exit-btn" href="#" onclick="goBack">
+                    <span>🔙</span>
+                    <span>Back</span>
+                </a>
+                <script>
+                    function goBack() {
+                        window.history.back();
+                    }
+                </script>
+            </div>
+        </div>
+
+        <!-- 中部主要内容 -->
+        <div id="article-container">
+            <!-- 文章内容：交由前端渲染 -->
+            <div id="preview" class="markdown-body" data-body="{{ article.body }}"></div>
+        </div>
+
+        <!-- 右侧栏 -->
+        <div id="right-bar">
+            <div id="outline-title">📑Outline</div>
+            <!-- 文章TOC：暂时由后端处理 -->
+            <ul id="toc-items">
+                {{ toc|safe }}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Marked.js：提供markdown→HTML转换 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Highlight.js：提供代码块高亮 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
+    <!-- 自定义Js脚本 -->
+    <script src="{% static 'article/detail/script.js' %}"></script>
+</body>
+</html>
+
